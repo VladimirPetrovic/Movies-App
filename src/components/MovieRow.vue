@@ -1,16 +1,17 @@
 <template>
-  <div class="row" :class="{ 'highlighted': selected}">
+  <div class="row mb-2 mt-2" :class="{ 'highlighted': isSelected}">
     <div class="col-sm" v-text="movie.id"></div>
     <div class="col-sm" v-text="movie.title"></div>
     <div class="col-sm" v-text="movie.director"></div>
     <div class="col-sm" v-text="movie.releaseDate"></div>
     <div class="col-sm" v-text="movie.genre"></div>
+    <div class="col-sm" v-text="movie.duration"></div>
     <div class="col-sm">
       <b-button
         variant="primary"
         @click="onSelected"
       >
-        Select
+        Select / Deselect
       </b-button>
       </div>
   </div>
@@ -22,18 +23,22 @@ export default {
     movie: {
       type: Object,
       required: true
+    },
+    selectedMoviesIds: {
+      type: Array,
+      required: true,
+      default: () => []
     }
   },
-  data() {
-    return {
-      selected: false
+  computed: {
+    isSelected() {
+      return this.selectedMoviesIds.indexOf(this.movie.id) > -1
     }
   },
   methods: {
     onSelected() {
-      this.selected = true
-      this.$emit('on-selected-movie', this.movie)
-    }
+      this.$emit('on-selected-movie', this.movie, !this.isSelected)
+    },
   }
 }
 </script>
