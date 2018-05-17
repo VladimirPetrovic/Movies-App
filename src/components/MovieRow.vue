@@ -48,4 +48,3 @@ export default {
     background: grey
   }
 </style>
-

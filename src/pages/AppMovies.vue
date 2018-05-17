@@ -1,6 +1,7 @@
 <template>
   <div>
-    <movie-search @search-term="onSearchTermChanged"/>
+    <h1>{{ getCounter }}</h1>
+
     <div class="ml-2 mt-4">List of movies</div>
 
     <b-badge class="ml-2 mt-4">
@@ -9,12 +10,12 @@
     <b-button
       variant="primary"
       class="btn-sm"
-      @click="selectAll"
+      @click="selectAllMovies"
     >
       Select all
     </b-button>
     <b-button
-        variant="primary"
+        variant="warning"
         class="btn-sm"
         @click="deselectMovies"
       >
@@ -70,6 +71,8 @@ import MovieRow from '../components/MovieRow'
 import MovieSearch from '../components/MovieSearch'
 import MoviesPaginator from '../components/MoviesPaginator'
 
+import { mapGetters, mapMutations, mapActions } from 'vuex'
+
 export default {
   components: {
     MovieRow,
@@ -78,25 +81,34 @@ export default {
   },
   data() {
     return {
-      movies: [],
+      // movies: [],
       selectedMoviesIds: [],
       selectedPage: 1,
-      currentTerm: ''
+      // currentTerm: '',
+      intervalId: null
     }
   },
-  beforeRouteEnter(to, from, next) {
-    moviesService.getAllMovies().then(({ data }) => {
-      next((context) => {
-        context.movies = data.map((movie => {
-          movie.duration = parseInt(movie.duration)
-          return movie
-        }))
-      })
-    }).catch((error) => {
-      console.error(error)
-    })
-  },
+  // beforeRouteEnter(to, from, next) {
+    // moviesService.getAllMovies().then(({ data }) => {
+    //   next((context) => {
+    //     context.movies = data.map((movie => {
+    //       movie.duration = parseInt(movie.duration)
+    //       return movie
+    //     }))
+    //   })
+    // }).catch((error) => {
+    //   console.error(error)
+    // })
+  //   this.fetchMovies()
+  // },
   methods: {
+    ...mapActions([
+      'incrementCounterAction',
+      'fetchMovies'
+    ]),
+    ...mapMutations([
+      'incrementCounter'
+    ]),
     onSearchTermChanged(term) {
       // moviesService.getAllMovies(term).then((response) => {
       //   this.movies = response
@@ -116,8 +128,8 @@ export default {
     deselectMovies() {
       this.selectedMoviesIds = []
     },
-    selectAll() {
-      this.selectedMoviesIds = this.movies.map(movie => movie.id)
+    selectAllMovies() {
+      this.selectedMoviesIds = this.filteredMovies.map(movie => movie.id)
     },
     sortBy(prop, order) {
       let orderCoefficient = order === 'asc' ? 1 : -1
@@ -131,6 +143,11 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getCounter: 'getCounter',
+      currentTerm: 'getSearchTerm',
+      movies: 'getMovies'
+    }),
     selectedMoviesCounter() {
       return this.selectedMoviesIds.length
     },
@@ -150,6 +167,20 @@ export default {
         return movie.title.toLowerCase().includes(this.currentTerm.toLowerCase())
       })
     }
+  },
+  mounted() {
+    this.incrementCounterAction()
+  },
+  created() {
+    this.fetchMovies()
   }
+  // mounted() {
+  //   this.intervalId = setInterval(() => {
+  //     this.incrementCounter()
+  //   }, 1000)
+  // },
+  // destroyed() {
+  //   clearInterval(this.intervalId)
+  // }
 }
 </script>

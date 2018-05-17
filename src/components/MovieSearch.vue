@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-form-input
-      class="ml-2 mt-3 col-3"
+      class="ml-2 mt-2 col-10"
       size="sm"
       type="text"
       placeholder="Enter movie name"
@@ -14,7 +14,7 @@
 export default {
   methods: {
     emitInputChangeEvent(term) {
-      this.$emit('search-term', term)
+      this.$emit('search-term-change', term)
     }
   }
 }
